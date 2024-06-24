@@ -4,4 +4,9 @@ node_modules
 /build
 .env
 .git
+
+# Ignore IDE files
 .idea
+
+# Ignore coverage reports
+coverage
