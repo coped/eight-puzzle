@@ -6,6 +6,9 @@ export type RecursiveMutable<T> = {
 
 export type Action = { type: string; payload?: unknown };
 export type IsAction<T extends Action> = T;
+export type FromActions<T extends Record<string, (...args: any[]) => Action>> =
+  IsAction<ReturnType<T[keyof T]>>;
+export type MakeActionSelector<T, U extends Action> = Extract<U, { type: T }>;
 
 export type Comparator<T> = (a: T, b: T) => -1 | 0 | 1;
 
