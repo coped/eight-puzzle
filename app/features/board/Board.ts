@@ -1,6 +1,6 @@
 import cloneDeep from "lodash/cloneDeep";
 import { exch2D } from "~/utils";
-import { pos, Pos } from "./utils";
+import { pos, Pos, isEqualPos } from "./utils";
 
 export type State = number[][];
 
@@ -26,6 +26,14 @@ export class Board {
       goal.push(row);
     }
     return new Board(goal);
+  };
+
+  public move = (y: number, x: number): void => {
+    const thisMove = pos(y, x);
+    const zero = this.getZero();
+    const validMoves = this.validSurroundings(zero);
+    if (validMoves.some((move) => isEqualPos(thisMove, move)))
+      exch2D(this.state, thisMove, zero);
   };
 
   public dimension = (): number => this.state.length;
@@ -60,34 +68,13 @@ export class Board {
   };
 
   public neighbors = (): Board[] => {
-    const neighbors: Board[] = [];
+    const zero = this.getZero();
 
-    let zero: Pos = pos(0, 0);
-    for (let i = 0; i < this.dimension(); i++) {
-      for (let j = 0; j < this.dimension(); j++) {
-        if (this.state[i][j] === 0) {
-          zero = pos(i, j);
-          break;
-        }
-      }
-    }
-
-    const surroundings = [
-      pos(zero.y - 1, zero.x),
-      pos(zero.y, zero.x + 1),
-      pos(zero.y + 1, zero.x),
-      pos(zero.y, zero.x - 1),
-    ] as const;
-
-    surroundings.forEach((surrounding) => {
-      if (this.isInBounds(surrounding)) {
-        const neighbor = cloneDeep(this.state);
-        exch2D(neighbor, zero, surrounding);
-        neighbors.push(new Board(neighbor));
-      }
-    });
-
-    return neighbors;
+    return this.validSurroundings(zero).reduce<Board[]>((prev, current) => {
+      const neighbor = cloneDeep(this.state);
+      exch2D(neighbor, zero, current);
+      return [...prev, new Board(neighbor)];
+    }, []);
   };
 
   public twin = (): Board => {
@@ -100,6 +87,49 @@ export class Board {
 
     exch2D(twinState, a, b);
     return new Board(twinState);
+  };
+
+  public neighborDiff = (that: Board): Pos | null => {
+    let diff: Pos | null = null;
+
+    const zero = this.getZero();
+    const validSurroundings = this.validSurroundings(zero);
+
+    for (let i = 0; i < validSurroundings.length; i++) {
+      const neighbor = cloneDeep(this.state);
+      exch2D(neighbor, zero, validSurroundings[i]);
+      if (that.equals(new Board(neighbor))) {
+        diff = validSurroundings[i];
+        break;
+      }
+    }
+    return diff;
+  };
+
+  public getZero = (): Pos => {
+    let zero: Pos = pos(0, 0);
+    for (let i = 0; i < this.dimension(); i++) {
+      for (let j = 0; j < this.dimension(); j++) {
+        if (this.state[i][j] === 0) {
+          zero = pos(i, j);
+          break;
+        }
+      }
+    }
+    return zero;
+  };
+
+  private validSurroundings = (origin: Pos): Pos[] => {
+    const surroundings = [
+      pos(origin.y - 1, origin.x),
+      pos(origin.y, origin.x + 1),
+      pos(origin.y + 1, origin.x),
+      pos(origin.y, origin.x - 1),
+    ] as const;
+
+    return surroundings.reduce<Pos[]>((prev, current) => {
+      return this.isInBounds(current) ? [...prev, current] : prev;
+    }, []);
   };
 
   private isInBounds = (pos: Pos): boolean => {

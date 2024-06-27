@@ -220,4 +220,12 @@ describe("Board", () => {
       ]);
     });
   });
+
+  describe("neighborDiff", () => {
+    it.fails("should have tests", () => {});
+  });
+  
+  describe("getZero", () => {
+    it.fails("should have tests", () => {})
+  })
 });
