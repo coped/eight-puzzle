@@ -10,8 +10,9 @@
     "start": "remix-serve ./build/server/index.js",
     "typecheck": "tsc",
     "autoformat": "npx --yes prettier --write app/",
-    "test": "vitest",
-    "check-everything": "npm run typecheck && npm run lint && npx --yes vitest --run && npm run autoformat"
+    "test-run": "vitest --run",
+    "test-watch": "vitest",
+    "check-everything": "npm run typecheck && npm run lint && npm run test-run && npm run autoformat"
   },
   "dependencies": {
     "@remix-run/node": "^2.9.2",
