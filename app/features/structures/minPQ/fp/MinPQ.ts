@@ -10,12 +10,12 @@ export class MinPQ {
   };
 
   public static min = <T>(heap: T[]): T => {
-    if (isEmpty(heap)) throw new Error("Priority queue is empty");
+    if (isEmpty(heap)) throw new Error("Priority queue underflow");
     else return cloneDeep(heap[1]);
   };
 
   public static delMin = <T>(heap: T[], c: Comparator<T>): [T, T[]] => {
-    if (isEmpty(heap)) throw new Error("Priority queue is empty");
+    if (isEmpty(heap)) throw new Error("Priority queue underflow");
     const copy = cloneDeep(heap);
     const min = delMin(copy, c);
     return [min, copy];

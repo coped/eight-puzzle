@@ -14,12 +14,12 @@ export class MinPQ<T> {
   public insert = (item: T): void => insert(this.heap, item, this.c);
 
   public min = (): T => {
-    if (this.isEmpty()) throw new Error("Priority queue is empty");
+    if (this.isEmpty()) throw new Error("Priority queue underflow");
     else return this.heap[1];
   };
 
   public delMin = (): T => {
-    if (this.isEmpty()) throw new Error("Priority queue is empty.");
+    if (this.isEmpty()) throw new Error("Priority queue underflow");
     return delMin(this.heap, this.c);
   };
 
