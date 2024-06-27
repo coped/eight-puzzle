@@ -39,10 +39,10 @@ export const exch = <T>(list: T[], a: number, b: number): void => {
 };
 
 export const exch2D = <T>(list: T[][], a: Pos, b: Pos): void => {
-  Assert.indexInRange(list, a.x);
-  Assert.indexInRange(list, b.x);
-  Assert.indexInRange(list[0], a.y);
-  Assert.indexInRange(list[0], b.y);
+  Assert.indexInRange(list, a.y);
+  Assert.indexInRange(list, b.y);
+  Assert.indexInRange(list[0], a.x);
+  Assert.indexInRange(list[0], b.x);
 
   const tmp = list[a.y][a.x];
   list[a.y][a.x] = list[b.y][b.x];

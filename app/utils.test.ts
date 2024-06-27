@@ -112,7 +112,8 @@ describe("utils", () => {
     let list: number[];
 
     beforeEach(() => {
-      list = [1, 2, 3, 4, 5];
+      list = [];
+      for (let i = 0; i < 100; i++) list.push(i);
     });
 
     it("should shuffle array of items", () => {

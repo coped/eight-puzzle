@@ -4,6 +4,9 @@ import { shuffle } from "~/utils";
 export type Pos = { x: number; y: number };
 export const pos = (y: number, x: number): Pos => ({ x, y });
 
+export const isEqualPos = (a: Pos, b: Pos): boolean =>
+  a.y === b.y && a.x === b.x;
+
 export const randomState = (dimension: number): State => {
   const indices: number[] = [];
   for (let i = 0; i < dimension * dimension; i++) indices.push(i);
