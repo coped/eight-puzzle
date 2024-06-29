@@ -13,4 +13,9 @@ export default defineConfig({
     }),
     tsconfigPaths(),
   ],
+  test: {
+    coverage: {
+      provider: "v8",
+    },
+  },
 });

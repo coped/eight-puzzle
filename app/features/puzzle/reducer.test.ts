@@ -4,6 +4,9 @@ import reducer, {
   type InitialState,
   type PlayingState,
   actions,
+  type Action,
+  toWon,
+  toPlaying,
 } from "./reducer";
 
 describe("reducer", () => {
@@ -116,16 +119,21 @@ describe("reducer", () => {
     });
 
     it("should handle when board is solved", () => {
-      const state = reducer(
-        createInitialState([
-          [1, 2, 3],
-          [4, 5, 6],
-          [7, 8, 0],
-        ]),
-        hint()
-      );
+      const state = reducer(toWon(toPlaying(createInitialState())), hint());
 
       expect(state.solution).toEqual([]);
+    });
+  });
+
+  describe("default", () => {
+    let state: InitialState;
+
+    beforeEach(() => {
+      state = createInitialState();
+    });
+
+    it("should be unreachable", () => {
+      expect(() => reducer(state, {} as Action)).toThrow();
     });
   });
 });

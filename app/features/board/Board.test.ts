@@ -99,6 +99,15 @@ describe("Board", () => {
     it("should return false for different boards", () => {
       expect(control.equals(different)).toEqual(false);
     });
+
+    it("should return false for boards of different dimensions", () => {
+      const board = new Board([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 0],
+      ]);
+      expect(control.equals(board)).toEqual(false);
+    });
   });
 
   describe("neighbors", () => {
@@ -210,7 +219,7 @@ describe("Board", () => {
       ]);
     });
 
-    it("should return twin ignoring empty space", () => {
+    it("should return twin ignoring empty space in first row", () => {
       const board = new Board([
         [0, 1],
         [2, 3],
@@ -218,6 +227,17 @@ describe("Board", () => {
       expect(board.twin().getState()).toEqual([
         [0, 2],
         [1, 3],
+      ]);
+    });
+
+    it("should return twin ignoring empty space in second row", () => {
+      const board = new Board([
+        [1, 2],
+        [0, 3],
+      ]);
+      expect(board.twin().getState()).toEqual([
+        [3, 2],
+        [0, 1],
       ]);
     });
   });

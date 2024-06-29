@@ -1,5 +1,3 @@
-import { Assert } from "~/utils";
-
 export class Stack<T> {
   private readonly state: T[];
 
@@ -13,7 +11,7 @@ export class Stack<T> {
 
   public pop = (): T => {
     if (this.isEmpty()) throw new Error("Stack underflow");
-    return this.state.pop() ?? Assert.unreachable();
+    return this.state.pop() as T;
   };
 
   public peek = (): T => {

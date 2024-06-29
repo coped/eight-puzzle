@@ -54,8 +54,8 @@ export const createInitialState = (
 
 /* Actions */
 
-type Actions = FromActions<typeof actions>;
-type SelectAction<T extends Actions["type"]> = MakeActionSelector<T, Actions>;
+export type Action = FromActions<typeof actions>;
+type SelectAction<T extends Action["type"]> = MakeActionSelector<T, Action>;
 
 export const actions = {
   move: (y: number, x: number) =>
@@ -71,7 +71,7 @@ export const actions = {
 
 /* Reducer */
 
-const reducer = (state: State, action: Actions): State => {
+const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "PUZZLE/MOVE":
       return handleMove(state, action);
@@ -126,5 +126,18 @@ const handleHint = (state: State): State => {
     solution: steps,
   };
 };
+
+/* State transitions */
+
+export const toWon = (state: PlayingState): WonState => ({
+  ...state,
+  solution: [],
+  status: "WON",
+});
+
+export const toPlaying = (state: InitialState): PlayingState => ({
+  ...state,
+  status: "PLAYING",
+});
 
 export default reducer;
