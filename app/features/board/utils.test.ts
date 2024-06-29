@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { pos, randomState } from "./utils";
+import { pos, randomState, type Pos, isEqualPos } from "./utils";
 import flattenDeep from "lodash/flattenDeep";
 
 describe("board utils", () => {
@@ -20,6 +20,24 @@ describe("board utils", () => {
       const random = flattenDeep(randomState(3));
       ns.forEach((n) => expect(random).toContain(n));
       expect(random).not.toEqual(ns);
+    });
+  });
+
+  describe("isEqualPos", () => {
+    let control: Pos, same: Pos, diff: Pos;
+
+    beforeEach(() => {
+      control = { y: 0, x: 0 };
+      same = { y: 0, x: 0 };
+      diff = { y: 1, x: 1 };
+    });
+
+    it("should return true for equal pos", () => {
+      expect(isEqualPos(control, same)).toEqual(true);
+    });
+
+    it("should return false for diff pos", () => {
+      expect(isEqualPos(control, diff)).toEqual(false);
     });
   });
 });

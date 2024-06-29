@@ -1,9 +1,7 @@
 import { FromActions, type MakeActionSelector, Assert } from "~/utils";
 import { Board, type State as BoardState } from "~/features/board/Board";
-import { randomState, type Pos } from "~/features/board/utils";
+import { randomState, type Pos, pos } from "~/features/board/utils";
 import { aStarSearch } from "~/features/solution/utils";
-import { Queue } from "~/features/structures/queue/Queue";
-import { toArray } from "~/features/structures/queue/utils";
 
 /* State */
 
@@ -18,7 +16,7 @@ type BaseState = {
   status: Status;
 };
 
-type InitialState = IsBaseState<{
+export type InitialState = IsBaseState<{
   board: BoardState;
   prev: [];
   solution: Pos[] | null;
@@ -26,7 +24,7 @@ type InitialState = IsBaseState<{
   status: "INITIAL";
 }>;
 
-type PlayingState = IsBaseState<{
+export type PlayingState = IsBaseState<{
   board: BoardState;
   prev: Pos[];
   solution: Pos[] | null;
@@ -34,7 +32,7 @@ type PlayingState = IsBaseState<{
   status: "PLAYING";
 }>;
 
-type WonState = IsBaseState<{
+export type WonState = IsBaseState<{
   board: BoardState;
   prev: Pos[];
   solution: [];
@@ -42,15 +40,17 @@ type WonState = IsBaseState<{
   status: "WON";
 }>;
 
-type State = InitialState | PlayingState | WonState;
+export type State = InitialState | PlayingState | WonState;
 
-export const initialState: InitialState = {
-  board: new Board(randomState(3)).getState(),
+export const createInitialState = (
+  boardState: BoardState = randomState(3)
+): InitialState => ({
+  board: boardState,
   prev: [],
   solution: [],
   turns: 0,
   status: "INITIAL",
-};
+});
 
 /* Actions */
 
@@ -90,15 +90,21 @@ const handleMove = (
 ): State => {
   const board = new Board(state.board);
   const zero = board.getZero();
-  board.move(y, x);
-  return {
-    ...state,
-    board: board.getState(),
-    prev: [...state.prev, zero],
-    solution: [],
-    turns: state.turns + 1,
-    status: board.isGoal() ? "WON" : "PLAYING",
-  };
+  const move = pos(y, x);
+  if (board.isValidMove(move)) {
+    board.move(move);
+
+    return {
+      ...state,
+      board: board.getState(),
+      prev: [...state.prev, zero],
+      solution: [],
+      turns: state.turns + 1,
+      status: board.isGoal() ? "WON" : "PLAYING",
+    };
+  } else {
+    return state;
+  }
 };
 
 const handleHint = (state: State): State => {
@@ -107,19 +113,17 @@ const handleHint = (state: State): State => {
   const solution = aStarSearch(new Board(state.board));
   if (solution.isEmpty()) return { ...state, solution: null };
 
-  const steps: Queue<Pos> = new Queue();
+  const steps: Pos[] = [];
 
-  let first = solution.pop();
-  while (!solution.isEmpty()) {
-    const next = solution.pop();
-    const diff = first.neighborDiff(next) ?? Assert.unreachable();
-    steps.enqueue(diff);
-    first = next;
-  }
+  // Discard the first board since it represents the
+  // current state, not the next board in the solution
+  solution.pop();
+
+  while (!solution.isEmpty()) steps.push(solution.pop().getZero());
 
   return {
     ...state,
-    solution: toArray(steps),
+    solution: steps,
   };
 };
 

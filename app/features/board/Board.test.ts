@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Board } from "./Board";
+import { pos, type Pos } from "./utils";
 
 describe("Board", () => {
   describe("dimension", () => {
@@ -221,11 +222,90 @@ describe("Board", () => {
     });
   });
 
-  describe("neighborDiff", () => {
-    it.fails("should have tests", () => {});
-  });
-  
   describe("getZero", () => {
-    it.fails("should have tests", () => {})
-  })
+    it.each([
+      [
+        [
+          [1, 2],
+          [3, 0],
+        ],
+        pos(1, 1),
+      ],
+      [
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 0],
+        ],
+        pos(2, 2),
+      ],
+      [
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 0, 8],
+        ],
+        pos(2, 1),
+      ],
+      [
+        [
+          [1, 2, 3],
+          [4, 0, 5],
+          [6, 7, 8],
+        ],
+        pos(1, 1),
+      ],
+    ])("should get zero", (state, expectedZero) => {
+      const board = new Board(state);
+      expect(board.getZero()).toEqual(expectedZero);
+    });
+  });
+
+  describe("isValidMove", () => {
+    let board: Board;
+
+    beforeEach(() => {
+      board = new Board([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 0],
+      ]);
+    });
+
+    it("should return true for valid moves", () => {
+      const move: Pos = pos(2, 1);
+      expect(board.isValidMove(move)).toEqual(true);
+    });
+
+    it("should return false for invalid moves", () => {
+      const move: Pos = pos(0, 0);
+      expect(board.isValidMove(move)).toEqual(false);
+    });
+
+    it("should return false for diagonal moves", () => {
+      const move: Pos = pos(1, 1);
+      expect(board.isValidMove(move)).toEqual(false);
+    });
+
+    it("should return false for out of bounds moves", () => {
+      const move: Pos = pos(10, 10);
+      expect(board.isValidMove(move)).toEqual(false);
+    });
+  });
+
+  describe("move", () => {
+    it("should move", () => {
+      const board = new Board([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 0],
+      ]);
+      board.move(pos(2, 1));
+      expect(board.getState()).toEqual([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 0, 8],
+      ]);
+    });
+  });
 });

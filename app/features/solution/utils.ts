@@ -13,12 +13,15 @@ export const aStarSearch = (board: Board): Stack<Board> => {
   pq.insert(new SearchNode(board, 0, null));
   twinPq.insert(new SearchNode(board.twin(), 0, null));
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const min = pq.delMin();
     const twinMin = twinPq.delMin();
 
-    if (min.board.isGoal()) min.forEach((node) => solution.push(node.board));
-    else if (twinMin.board.isGoal()) break;
+    if (min.board.isGoal()) {
+      min.forEach((node) => solution.push(node.board));
+      break;
+    } else if (twinMin.board.isGoal()) break;
 
     min.board.neighbors().forEach((neighbor) => {
       if (min.prev == null || !neighbor.equals(min.prev.board)) {

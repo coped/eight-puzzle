@@ -28,12 +28,8 @@ export class Board {
     return new Board(goal);
   };
 
-  public move = (y: number, x: number): void => {
-    const thisMove = pos(y, x);
-    const zero = this.getZero();
-    const validMoves = this.validSurroundings(zero);
-    if (validMoves.some((move) => isEqualPos(thisMove, move)))
-      exch2D(this.state, thisMove, zero);
+  public move = (thisMove: Pos): void => {
+    exch2D(this.state, thisMove, this.getZero());
   };
 
   public dimension = (): number => this.state.length;
@@ -89,23 +85,6 @@ export class Board {
     return new Board(twinState);
   };
 
-  public neighborDiff = (that: Board): Pos | null => {
-    let diff: Pos | null = null;
-
-    const zero = this.getZero();
-    const validSurroundings = this.validSurroundings(zero);
-
-    for (let i = 0; i < validSurroundings.length; i++) {
-      const neighbor = cloneDeep(this.state);
-      exch2D(neighbor, zero, validSurroundings[i]);
-      if (that.equals(new Board(neighbor))) {
-        diff = validSurroundings[i];
-        break;
-      }
-    }
-    return diff;
-  };
-
   public getZero = (): Pos => {
     let zero: Pos = pos(0, 0);
     for (let i = 0; i < this.dimension(); i++) {
@@ -117,6 +96,11 @@ export class Board {
       }
     }
     return zero;
+  };
+
+  public isValidMove = (move: Pos, zero: Pos = this.getZero()): boolean => {
+    const validMoves = this.validSurroundings(zero);
+    return validMoves.some((valid) => isEqualPos(valid, move));
   };
 
   private validSurroundings = (origin: Pos): Pos[] => {

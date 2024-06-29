@@ -20,10 +20,7 @@ export class SearchNode {
   };
 
   public forEach = (fn: (node: SearchNode) => unknown): void => {
-    let current: SearchNode | null = this;
-    while (current) {
-      fn(current);
-      current = this.prev;
-    }
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    for (let cur: SearchNode | null = this; cur; cur = cur.prev) fn(cur);
   };
 }

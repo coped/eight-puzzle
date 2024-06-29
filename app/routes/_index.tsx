@@ -1,8 +1,8 @@
 import { useReducer } from "react";
-import reducer, { initialState } from "~/features/puzzle/reducer";
+import reducer, { createInitialState } from "~/features/puzzle/reducer";
 
 export default function Index() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, createInitialState());
 
   return (
     <div>
