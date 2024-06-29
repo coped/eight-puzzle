@@ -1,4 +1,4 @@
-import { FromActions, type MakeActionSelector, Assert } from "~/utils";
+import { Assert, type ValueOf, type IsAction } from "~/utils";
 import { Board, type State as BoardState } from "~/features/board/Board";
 import { randomState, type Pos, pos } from "~/features/board/utils";
 import { aStarSearch } from "~/features/solution/utils";
@@ -54,8 +54,8 @@ export const createInitialState = (
 
 /* Actions */
 
-export type Action = FromActions<typeof actions>;
-type SelectAction<T extends Action["type"]> = MakeActionSelector<T, Action>;
+export type Action = IsAction<ReturnType<ValueOf<typeof actions>>>;
+type SelectAction<T extends Action["type"]> = Extract<Action, { type: T }>;
 
 export const actions = {
   move: (y: number, x: number) =>
