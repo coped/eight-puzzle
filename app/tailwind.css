@@ -84,3 +84,32 @@ h6 {
 /*
     End CSS reset
 */
+
+.board {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  gap: 5px;
+}
+
+.tile {
+  height: 4em;
+  width: 4em;
+  border: black 1px solid;
+}
+
+.zero-tile {
+  height: 4em;
+  width: 4em;
+}
+
+.highlighted {
+  height: 4em;
+  width: 4em;
+  border: black 1px solid;
+  background-color: red;
+}
