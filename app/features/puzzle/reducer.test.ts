@@ -27,7 +27,11 @@ describe("reducer", () => {
         [4, 5, 6],
         [7, 0, 8],
       ],
-      prev: [{ y: 1, x: 1 }],
+      initial: [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 0, 8],
+      ],
       turns: 1,
       solution: [],
       status: "PLAYING",
@@ -39,12 +43,12 @@ describe("reducer", () => {
     it("should handle valid move", () => {
       const state = reducer(initialState, move(1, 0));
       expect(state).toEqual({
+        ...state,
         board: [
           [1, 2, 3],
           [0, 4, 5],
           [6, 7, 8],
         ],
-        prev: [{ y: 1, x: 1 }],
         solution: [],
         turns: 1,
         status: "PLAYING",
@@ -59,14 +63,11 @@ describe("reducer", () => {
     it("should transition to won state upon winning move", () => {
       const state = reducer(preWinState, move(2, 2));
       expect(state).toEqual({
+        ...state,
         board: [
           [1, 2, 3],
           [4, 5, 6],
           [7, 8, 0],
-        ],
-        prev: [
-          { y: 1, x: 1 },
-          { y: 2, x: 1 },
         ],
         solution: [],
         turns: 2,

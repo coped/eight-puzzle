@@ -5,40 +5,27 @@ import { aStarSearch } from "~/features/solution/utils";
 
 /* State */
 
-type Status = "INITIAL" | "PLAYING" | "WON";
-
-type IsBaseState<T extends BaseState> = T;
 type BaseState = {
   board: BoardState;
-  prev: Pos[];
+  initial: BoardState;
   solution: Pos[] | null;
   turns: number;
-  status: Status;
+  status: "INITIAL" | "PLAYING" | "WON";
 };
 
-export type InitialState = IsBaseState<{
-  board: BoardState;
-  prev: [];
-  solution: Pos[] | null;
+export type InitialState = BaseState & {
   turns: 0;
   status: "INITIAL";
-}>;
+};
 
-export type PlayingState = IsBaseState<{
-  board: BoardState;
-  prev: Pos[];
-  solution: Pos[] | null;
-  turns: number;
+export type PlayingState = BaseState & {
   status: "PLAYING";
-}>;
+};
 
-export type WonState = IsBaseState<{
-  board: BoardState;
-  prev: Pos[];
+export type WonState = BaseState & {
   solution: [];
-  turns: number;
   status: "WON";
-}>;
+};
 
 export type State = InitialState | PlayingState | WonState;
 
@@ -46,7 +33,7 @@ export const createInitialState = (
   boardState: BoardState = randomState(3)
 ): InitialState => ({
   board: boardState,
-  prev: [],
+  initial: boardState,
   solution: [],
   turns: 0,
   status: "INITIAL",
@@ -59,14 +46,10 @@ type SelectAction<T extends Action["type"]> = Extract<Action, { type: T }>;
 
 export const actions = {
   move: (y: number, x: number) =>
-    ({
-      type: "PUZZLE/MOVE",
-      payload: { y, x },
-    } as const),
-  hint: () =>
-    ({
-      type: "PUZZLE/HINT",
-    } as const),
+    ({ type: "PUZZLE/MOVE", payload: { y, x } } as const),
+  hint: () => ({ type: "PUZZLE/HINT" } as const),
+  reset: () => ({ type: "PUZZLE/RESET" } as const),
+  new: () => ({ type: "PUZZLE/NEW" } as const),
 } as const;
 
 /* Reducer */
@@ -77,6 +60,10 @@ const reducer = (state: State, action: Action): State => {
       return handleMove(state, action);
     case "PUZZLE/HINT":
       return handleHint(state);
+    case "PUZZLE/RESET":
+      return handleReset(state);
+    case "PUZZLE/NEW":
+      return handleNew(state);
     default:
       return Assert.unreachable();
   }
@@ -89,7 +76,6 @@ const handleMove = (
   { payload: { y, x } }: SelectAction<"PUZZLE/MOVE">
 ): State => {
   const board = new Board(state.board);
-  const zero = board.getZero();
   const move = pos(y, x);
   if (board.isValidMove(move)) {
     board.move(move);
@@ -97,7 +83,6 @@ const handleMove = (
     return {
       ...state,
       board: board.getState(),
-      prev: [...state.prev, zero],
       solution: [],
       turns: state.turns + 1,
       status: board.isGoal() ? "WON" : "PLAYING",
@@ -127,9 +112,17 @@ const handleHint = (state: State): State => {
   };
 };
 
+const handleReset = (state: State): State => {
+  return toInitial(state, state.initial);
+};
+
+const handleNew = (state: State): State => {
+  return toInitial(state);
+};
+
 /* State transitions */
 
-export const toWon = (state: PlayingState): WonState => ({
+export const toWon = (state: InitialState | PlayingState): WonState => ({
   ...state,
   solution: [],
   status: "WON",
@@ -138,6 +131,18 @@ export const toWon = (state: PlayingState): WonState => ({
 export const toPlaying = (state: InitialState): PlayingState => ({
   ...state,
   status: "PLAYING",
+});
+
+export const toInitial = (
+  state: InitialState | PlayingState | WonState,
+  newBoard: BoardState = randomState(3)
+): InitialState => ({
+  ...state,
+  board: newBoard,
+  initial: newBoard,
+  solution: [],
+  turns: 0,
+  status: "INITIAL",
 });
 
 export default reducer;

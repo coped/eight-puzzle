@@ -3,8 +3,8 @@ import { type ReactNode } from "react";
 export type Props = {
   y: number;
   x: number;
-  children: ReactNode;
-  onClick(y: number, x: number): void;
+  children?: ReactNode;
+  onClick?(y: number, x: number): void;
   type: "DEFAULT" | "ZERO" | "SOLUTION";
   disabled: boolean;
 };
@@ -12,17 +12,25 @@ export type Props = {
 const classMap: Record<Props["type"], string> = {
   DEFAULT: "tile",
   ZERO: "zero-tile",
-  SOLUTION: "highlighted",
+  SOLUTION: "tile highlighted",
 };
 
-export function Tile(props: Props) {
+export function Tile({
+  y,
+  x,
+  onClick,
+  type,
+  disabled = false,
+  children,
+}: Props) {
+  onClick = onClick ?? (() => {});
   return (
     <button
-      onClick={() => props.onClick(props.y, props.x)}
-      disabled={props.disabled || props.type === "ZERO"}
-      className={classMap[props.type]}
+      onClick={() => onClick(y, x)}
+      disabled={disabled || type === "ZERO"}
+      className={classMap[type]}
     >
-      {props.type === "ZERO" ? "" : props.children}
+      {type === "ZERO" ? "" : children}
     </button>
   );
 }
