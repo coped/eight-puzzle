@@ -12,7 +12,9 @@
     "autoformat": "npx --yes prettier --write app/",
     "test-run": "vitest --run",
     "test-watch": "vitest",
-    "check-everything": "npm run typecheck && npm run lint && npm run test-run && npm run autoformat"
+    "check-everything": "npm run typecheck && npm run lint && npm run test-run && npm run autoformat",
+    "docker-build": "docker build -t projects/eight-puzzle:latest .",
+    "docker-run": "npm run docker-build && docker run -p 3000:3000 projects/eight-puzzle:latest"
   },
   "dependencies": {
     "@remix-run/node": "^2.9.2",
