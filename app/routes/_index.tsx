@@ -1,4 +1,6 @@
 import { useReducer } from "react";
+import { useLoaderData } from "@remix-run/react";
+import { json } from "@remix-run/node";
 import reducer, {
   createInitialState,
   actions,
@@ -8,8 +10,13 @@ import { Tile, type Props as TileProps } from "~/features/board/Tile";
 import { isEqualPos, type Pos, pos } from "~/features/board/utils";
 import { useOneWayToggle } from "~/hooks";
 
+export async function loader() {
+  return json(createInitialState());
+}
+
 export default function Index() {
-  const [state, dispatch] = useReducer(reducer, createInitialState());
+  const initialState = useLoaderData<typeof loader>();
+  const [state, dispatch] = useReducer(reducer, initialState);
   const [seenResetWarning, setSeenResetWarning] = useOneWayToggle(false);
   const [seenNewWarning, setSeenNewWarning] = useOneWayToggle(false);
 
